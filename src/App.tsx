@@ -22,6 +22,7 @@ import { VolumeForecaster } from './components/VolumeForecaster';
 import { MasterSpreadsheetView } from './components/MasterSpreadsheetView';
 import { FormulaAndModelAnalysis } from './components/FormulaAndModelAnalysis';
 import { MonthlyMPTrendView } from './components/MonthlyMPTrendView';
+import { useAppPreferences } from './context/AppPreferencesContext';
 import {
   Layers,
   Save,
@@ -33,6 +34,10 @@ import {
   X,
   Copy,
   TrendingUp,
+  Globe,
+  Sun,
+  Moon,
+  Cpu,
 } from 'lucide-react';
 
 type ActiveTab =
@@ -59,6 +64,7 @@ interface SavedSnapshot {
 }
 
 export default function App() {
+  const { language, setLanguage, theme, setTheme, t } = useAppPreferences();
   const [activeTab, setActiveTab] = useState<ActiveTab>('forecaster');
   const [activeLine, setActiveLine] = useState<LineKey>('LineB');
   const [activeSheet, setActiveSheet] = useState<SheetKey>('ALL');
@@ -814,20 +820,100 @@ export default function App() {
           </button>
         </nav>
 
-        {/* Zone 3: Primary Actions */}
-        <div className="flex items-center gap-2.5 shrink-0">
+        {/* Zone 3: Language Switcher, Theme Switcher & Primary Actions */}
+        <div className="flex flex-wrap items-center gap-2 shrink-0">
+          {/* Language Switcher (TH | 中文 | EN) */}
+          <div
+            className="flex items-center gap-0.5 p-1 bg-slate-100 border border-slate-200 rounded-lg text-xs font-mono"
+            title={t(
+              'เปลี่ยนภาษาแสดงผล (ไทย / จีน / อังกฤษ)',
+              '切换显示语言 (泰语 / 中文 / 英语)',
+              'Switch Display Language (TH / ZH / EN)'
+            )}
+          >
+            <Globe className="w-3.5 h-3.5 text-blue-600 mx-1" />
+            <button
+              onClick={() => setLanguage('th')}
+              className={`px-2 py-1 rounded font-bold transition-colors cursor-pointer ${
+                language === 'th'
+                  ? 'bg-blue-600 text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              ไทย
+            </button>
+            <button
+              onClick={() => setLanguage('zh')}
+              className={`px-2 py-1 rounded font-bold transition-colors cursor-pointer ${
+                language === 'zh'
+                  ? 'bg-blue-600 text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              中文
+            </button>
+            <button
+              onClick={() => setLanguage('en')}
+              className={`px-2 py-1 rounded font-bold transition-colors cursor-pointer ${
+                language === 'en'
+                  ? 'bg-blue-600 text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              EN
+            </button>
+          </div>
+
+          {/* Theme Mode Switcher (Light | Dark | Industrial) */}
+          <div
+            className="flex items-center gap-0.5 p-1 bg-slate-100 border border-slate-200 rounded-lg text-xs"
+            title={t(
+              'เปลี่ยนโหมดธีมสี (สว่าง / มืด / โรงงาน)',
+              '切换主题模式 (浅色 / 深色 / 工业蓝)',
+              'Switch Theme Mode (Light / Dark / Industrial)'
+            )}
+          >
+            <button
+              onClick={() => setTheme('light')}
+              className={`inline-flex items-center gap-1 px-2 py-1 rounded font-semibold transition-colors cursor-pointer ${
+                theme === 'light'
+                  ? 'bg-white text-amber-600 shadow-xs font-bold'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Sun className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">{t('สว่าง', '浅色', 'Light')}</span>
+            </button>
+            <button
+              onClick={() => setTheme('dark')}
+              className={`inline-flex items-center gap-1 px-2 py-1 rounded font-semibold transition-colors cursor-pointer ${
+                theme === 'dark'
+                  ? 'bg-slate-900 text-indigo-300 shadow-xs font-bold'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Moon className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">{t('มืด', '深色', 'Dark')}</span>
+            </button>
+            <button
+              onClick={() => setTheme('industrial')}
+              className={`inline-flex items-center gap-1 px-2 py-1 rounded font-semibold transition-colors cursor-pointer ${
+                theme === 'industrial'
+                  ? 'bg-sky-700 text-white shadow-xs font-bold'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Cpu className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">{t('โรงงาน', '工业蓝', 'Factory')}</span>
+            </button>
+          </div>
+
           <button
             onClick={() => setIsStorageModalOpen(true)}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition-colors whitespace-nowrap cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition-colors whitespace-nowrap cursor-pointer"
           >
             <Save className="w-3.5 h-3.5" />
             <span>บันทึก / จัดเก็บข้อมูล ({snapshots.length})</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('forecaster')}
-            className="px-4 py-2 text-xs font-semibold text-white bg-slate-900 rounded-lg hover:bg-slate-800 transition-colors whitespace-nowrap cursor-pointer"
-          >
-            คำนวณ MP จาก Volume
           </button>
         </div>
       </header>
