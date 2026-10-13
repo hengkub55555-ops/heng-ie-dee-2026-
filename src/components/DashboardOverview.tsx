@@ -21,6 +21,7 @@ import {
   Plus,
   RotateCcw,
 } from 'lucide-react';
+import { PageLanguageSwitchBar } from '../context/AppPreferencesContext';
 
 interface DashboardOverviewProps {
   activeLine: LineKey;
@@ -37,6 +38,7 @@ interface DashboardOverviewProps {
   onSelectLineAndSheet: (line: LineKey, sheet: SheetKey) => void;
   onNavigateToForecaster: (presetWeek: WeekKey) => void;
   onNavigateToMaster: () => void;
+  onNavigateToLineCompare?: () => void;
   onUpdateStandardTime: (stationId: string, model: ModelSeries, newTime: number) => void;
   onUpdateWeeklyVolume: (model: ModelSeries, week: WeekKey, newVol: number) => void;
   onUpdateStationField: (stationId: string, patch: Partial<StationConfig>) => void;
@@ -59,6 +61,7 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
   onSelectLineAndSheet,
   onNavigateToForecaster,
   onNavigateToMaster,
+  onNavigateToLineCompare,
   onUpdateStandardTime,
   onUpdateWeeklyVolume,
   onUpdateStationField,
@@ -107,6 +110,7 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
 
   return (
     <div className="space-y-6">
+      <PageLanguageSwitchBar pageLabel="ภาพรวมประสิทธิภาพ (Dashboard Overview)" />
       {/* Top Bar Context & Week Switcher */}
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 bg-white border border-slate-200 rounded-xl p-5">
         <div>
@@ -287,6 +291,26 @@ export const DashboardOverview: React.FC<DashboardOverviewProps> = ({
             </div>
           </div>
         </div>
+
+        {onNavigateToLineCompare && (
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 bg-gradient-to-r from-indigo-50/90 via-blue-50/70 to-slate-50 border border-indigo-200 rounded-lg text-xs mt-3">
+            <div className="flex items-center gap-2 text-indigo-950 font-medium">
+              <span className="px-2 py-0.5 bg-indigo-600 text-white rounded font-mono text-[11px] font-bold shrink-0">
+                Line A vs Line B
+              </span>
+              <span>
+                <strong>แยกไลน์และเปรียบเทียบเวลามาตรฐาน:</strong> เวลามาตรฐาน (ST) แต่ละรุ่นของ Line A และ Line B ไม่เท่ากัน ใช้กำลังคนแตกต่างกัน
+              </span>
+            </div>
+            <button
+              onClick={onNavigateToLineCompare}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-md transition-colors cursor-pointer shrink-0"
+            >
+              <span>เปิด Sheet แยกไลน์ Line A vs Line B</span>
+              <ArrowUpRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
       </div>
 
       {/* CAB vs FG Quick Summary Banner for Active Line */}

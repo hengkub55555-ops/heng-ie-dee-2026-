@@ -17,6 +17,7 @@ import {
   Plus,
   Trash2,
 } from 'lucide-react';
+import { PageLanguageSwitchBar } from '../context/AppPreferencesContext';
 
 interface MasterSpreadsheetViewProps {
   activeLine: LineKey;
@@ -157,6 +158,7 @@ export const MasterSpreadsheetView: React.FC<MasterSpreadsheetViewProps> = ({
 
   return (
     <div className="space-y-5">
+      <PageLanguageSwitchBar pageLabel="ตารางข้อมูลหลัก (Master Spreadsheet)" />
       {/* Header & Controls Bar */}
       <div className="bg-white border border-slate-200 rounded-xl p-5 space-y-4">
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">

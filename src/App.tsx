@@ -22,7 +22,9 @@ import { VolumeForecaster } from './components/VolumeForecaster';
 import { MasterSpreadsheetView } from './components/MasterSpreadsheetView';
 import { FormulaAndModelAnalysis } from './components/FormulaAndModelAnalysis';
 import { MonthlyMPTrendView } from './components/MonthlyMPTrendView';
-import { useAppPreferences } from './context/AppPreferencesContext';
+import { ManpowerReductionPlanView } from './components/ManpowerReductionPlanView';
+import { LineComparisonSheetView } from './components/LineComparisonSheetView';
+import { useAppPreferences, PageLanguageSwitchBar } from './context/AppPreferencesContext';
 import {
   Layers,
   Save,
@@ -34,24 +36,28 @@ import {
   X,
   Copy,
   TrendingUp,
+  TrendingDown,
   Globe,
   Sun,
   Moon,
   Cpu,
+  Scale,
 } from 'lucide-react';
 
 type ActiveTab =
   | 'dashboard'
   | 'monthly_trend'
   | 'forecaster'
+  | 'reduction_plan'
+  | 'line_compare'
   | 'master'
   | 'formulas';
 
-const STORAGE_KEY_STATIONS = 'factory_linea_lineb_stations_v4';
-const STORAGE_KEY_VOLUMES_BY_LINE = 'factory_linea_lineb_volumes_v4';
-const STORAGE_KEY_MODELS = 'factory_linea_lineb_models_v4';
+const STORAGE_KEY_STATIONS = 'factory_linea_lineb_stations_v5';
+const STORAGE_KEY_VOLUMES_BY_LINE = 'factory_linea_lineb_volumes_v5';
+const STORAGE_KEY_MODELS = 'factory_linea_lineb_models_v5';
 const STORAGE_KEY_MONTHLY_PLAN = 'factory_linea_lineb_monthly_plan_v1';
-const STORAGE_KEY_SNAPSHOTS = 'factory_linea_lineb_snapshots_v4';
+const STORAGE_KEY_SNAPSHOTS = 'factory_linea_lineb_snapshots_v5';
 
 interface SavedSnapshot {
   id: string;
@@ -65,7 +71,7 @@ interface SavedSnapshot {
 
 export default function App() {
   const { language, setLanguage, theme, setTheme, t } = useAppPreferences();
-  const [activeTab, setActiveTab] = useState<ActiveTab>('forecaster');
+  const [activeTab, setActiveTab] = useState<ActiveTab>('reduction_plan');
   const [activeLine, setActiveLine] = useState<LineKey>('LineB');
   const [activeSheet, setActiveSheet] = useState<SheetKey>('ALL');
   const [selectedWeek, setSelectedWeek] = useState<WeekKey>('1W');
@@ -177,6 +183,16 @@ export default function App() {
   };
 
   const activeWeeklyVolumes = volumesByLine[activeLine];
+
+  // Distinct Stations for Line A and Line B
+  const lineAStations = useMemo(
+    () => stations.filter((s) => s.area === 'LineA'),
+    [stations]
+  );
+  const lineBStations = useMemo(
+    () => stations.filter((s) => s.area === 'LineB'),
+    [stations]
+  );
 
   // Filter stations by activeLine ('LineA' | 'LineB') and activeSheet ('CAB' | 'FG' | 'ALL')
   const lineStations = useMemo(
@@ -799,6 +815,28 @@ export default function App() {
             คาดการณ์กำลังคน MP
           </button>
           <button
+            onClick={() => setActiveTab('reduction_plan')}
+            className={`py-1 transition-colors whitespace-nowrap shrink-0 cursor-pointer border-b-2 flex items-center gap-1.5 ${
+              activeTab === 'reduction_plan'
+                ? 'border-rose-600 text-rose-700 font-semibold'
+                : 'border-transparent hover:text-slate-900'
+            }`}
+          >
+            <TrendingDown className="w-4 h-4" />
+            <span>แผนลดกำลังคน & ต้นทุน</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('line_compare')}
+            className={`py-1 transition-colors whitespace-nowrap shrink-0 cursor-pointer border-b-2 flex items-center gap-1.5 ${
+              activeTab === 'line_compare'
+                ? 'border-indigo-600 text-indigo-700 font-semibold'
+                : 'border-transparent hover:text-slate-900'
+            }`}
+          >
+            <Scale className="w-4 h-4" />
+            <span>แยกไลน์ Line A vs Line B (ST & กำลังคน)</span>
+          </button>
+          <button
             onClick={() => setActiveTab('master')}
             className={`py-1 transition-colors whitespace-nowrap shrink-0 cursor-pointer border-b-2 ${
               activeTab === 'master'
@@ -1029,6 +1067,30 @@ export default function App() {
             </button>
 
             <button
+              onClick={() => setActiveTab('reduction_plan')}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors cursor-pointer whitespace-nowrap ${
+                activeTab === 'reduction_plan'
+                  ? 'bg-rose-600 text-white border-rose-600 shadow-xs font-bold'
+                  : 'bg-rose-50 text-rose-800 border-rose-200 hover:bg-rose-100'
+              }`}
+            >
+              <TrendingDown className="w-3.5 h-3.5" />
+              <span>Sheet แผนลดกำลังคน & ลดต้นทุน</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab('line_compare')}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors cursor-pointer whitespace-nowrap ${
+                activeTab === 'line_compare'
+                  ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs font-bold'
+                  : 'bg-indigo-50 text-indigo-900 border-indigo-200 hover:bg-indigo-100'
+              }`}
+            >
+              <Scale className="w-3.5 h-3.5" />
+              <span>Sheet เปรียบเทียบ Line A vs Line B (ST & กำลังคน)</span>
+            </button>
+
+            <button
               onClick={() => setActiveTab('monthly_trend')}
               className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border transition-colors cursor-pointer whitespace-nowrap ${
                 activeTab === 'monthly_trend'
@@ -1064,6 +1126,7 @@ export default function App() {
             }}
             onNavigateToForecaster={handleNavigateToForecaster}
             onNavigateToMaster={() => setActiveTab('master')}
+            onNavigateToLineCompare={() => setActiveTab('line_compare')}
             onUpdateStandardTime={handleUpdateStandardTime}
             onUpdateWeeklyVolume={handleUpdateWeeklyVolume}
             onUpdateStationField={handleUpdateStationField}
@@ -1122,6 +1185,50 @@ export default function App() {
           />
         )}
 
+        {activeTab === 'reduction_plan' && (
+          <ManpowerReductionPlanView
+            activeLine={activeLine}
+            activeSheet={activeSheet}
+            models={models}
+            stations={activeStations}
+            allLineStations={lineStations}
+            weeklyVolumes={activeWeeklyVolumes}
+            selectedWeek={selectedWeek}
+            onSelectWeek={setSelectedWeek}
+            onSelectLineAndSheet={(line, sheet) => {
+              setActiveLine(line);
+              setActiveSheet(sheet);
+            }}
+            onSaveForecastToWeek={handleSaveForecastToWeek}
+            onApplyToMonth={handleApplyForecastToMonth}
+          />
+        )}
+
+        {activeTab === 'line_compare' && (
+          <LineComparisonSheetView
+            models={models}
+            stations={stations}
+            lineAStations={lineAStations}
+            lineBStations={lineBStations}
+            volumesByLine={volumesByLine}
+            lineACabMetrics={lineACabMetrics}
+            lineAFgMetrics={lineAFgMetrics}
+            lineATotalMetrics={lineATotalMetrics}
+            lineBCabMetrics={lineBCabMetrics}
+            lineBFgMetrics={lineBFgMetrics}
+            lineBTotalMetrics={lineBTotalMetrics}
+            selectedWeek={selectedWeek}
+            onSelectWeek={setSelectedWeek}
+            onNavigateToLine={(line, sheet) => {
+              setActiveLine(line);
+              if (sheet) setActiveSheet(sheet);
+              setActiveTab('master');
+            }}
+            onUpdateStandardTime={handleUpdateStandardTime}
+            onUpdateStationField={handleUpdateStationField}
+          />
+        )}
+
         {activeTab === 'master' && (
           <MasterSpreadsheetView
             activeLine={activeLine}
@@ -1156,6 +1263,7 @@ export default function App() {
       {isStorageModalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-900/50 flex items-center justify-center p-4">
           <div className="bg-white border border-slate-200 rounded-xl max-w-2xl w-full p-6 space-y-5 shadow-xl">
+            <PageLanguageSwitchBar pageLabel="บันทึก / จัดเก็บข้อมูล (Save / Backup Data)" />
             <div className="flex items-center justify-between pb-3 border-b border-slate-200">
               <div>
                 <h2 className="text-base font-bold text-slate-900">

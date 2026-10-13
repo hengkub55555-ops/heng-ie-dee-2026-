@@ -22,6 +22,7 @@ import {
   CheckCircle2,
   BarChart3,
 } from 'lucide-react';
+import { PageLanguageSwitchBar } from '../context/AppPreferencesContext';
 
 interface MonthlyMPTrendViewProps {
   activeLine: LineKey;
@@ -262,6 +263,7 @@ export const MonthlyMPTrendView: React.FC<MonthlyMPTrendViewProps> = ({
 
   return (
     <div className="space-y-6">
+      <PageLanguageSwitchBar pageLabel="กราฟแนวโน้ม MP 12 เดือน (12-Month MP Trend)" />
       {/* Top Control & Overview Banner */}
       <div className="bg-white border border-slate-200 rounded-xl p-5 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div>

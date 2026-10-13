@@ -28,6 +28,7 @@ import {
   Users,
   Clock,
 } from 'lucide-react';
+import { PageLanguageSwitchBar } from '../context/AppPreferencesContext';
 
 interface VolumeForecasterProps {
   activeLine: LineKey;
@@ -507,6 +508,7 @@ export const VolumeForecaster: React.FC<VolumeForecasterProps> = ({
 
   return (
     <div className="space-y-6">
+      <PageLanguageSwitchBar pageLabel="Sheet ปรับเพิ่ม-ลด Volume → คาดการณ์ MP ทันที" />
       {/* Top Sheet Header & Live Web Sync Bar */}
       <div className="bg-white border border-slate-200 rounded-xl p-5 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
         <div>

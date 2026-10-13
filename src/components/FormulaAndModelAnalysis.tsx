@@ -11,6 +11,7 @@ import {
   Layers,
   Plus,
 } from 'lucide-react';
+import { PageLanguageSwitchBar } from '../context/AppPreferencesContext';
 
 interface FormulaAndModelAnalysisProps {
   models: ModelMetadata[];
@@ -49,6 +50,7 @@ export const FormulaAndModelAnalysis: React.FC<FormulaAndModelAnalysisProps> = (
 
   return (
     <div className="space-y-6">
+      <PageLanguageSwitchBar pageLabel="สูตรคำนวณ & เวลารายรุ่น (IE Formulas & Model ST)" />
       {/* Header */}
       <div className="bg-white border border-slate-200 rounded-xl p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
